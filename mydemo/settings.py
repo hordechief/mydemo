@@ -37,7 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'codingsohodemo',
+    'authwrapper',
+    'phone_login',
+    'rest_framework',
+    'rest_framework.authtoken',    
+    'crispy_forms',
+    'weixin',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +62,7 @@ ROOT_URLCONF = 'mydemo.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "templates"), ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -106,16 +113,55 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
 USE_L10N = True
 
 USE_TZ = True
+TIME_ZONE = 'Asia/Shanghai'
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+AUTH_USER_MODEL = 'authwrapper.MyUser'
+ACCOUNT_ALLOW_MIX_TYPE_LOGIN = True
+UUSLUGIFY = True
+
+AUTHENTICATION_BACKENDS = (        
+    'authwrapper.backends.auth.MyBackend', 
+    'authwrapper.backends.auth.WechatBackend',
+    'phone_login.backends.phone_backend.PhoneBackend',
+    'django.contrib.auth.backends.ModelBackend',     
+    )
+AUTH_USER_MODEL = 'authwrapper.MyUser'
+
+ACCOUNT_REGISTER_TYPE =  'phone' #phone, 'mail',
+
+# Wechat
+if not 'SERVER_SOFTWARE' in os.environ:
+    APP_ID = 'wxe90ebbe29377e650' #changyubingfeng
+    APP_SECRET = 'd4624c36b6795d1d99dcf0547af5443d'    
+else:
+    APP_ID = 'wx168434ba37e8c17b' #
+    APP_SECRET = 'd4624c36b6795d1d99dcf0547af5443d'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    )
+}
+
+# Configure the SENDSMS_BACKEND (for django-sendsms integration)
+# SENDSMS_BACKEND = 'myapp.mysmsbackend.SmsBackend' #(defaults to 'sendsms.backends.console.SmsBackend')
+SENDSMS_FROM_NUMBER = "+XXxxxxxxxxxx" 
+SENDSMS_ACCOUNT_SID = 'ACXXXXXXXXXXXXXX'
+SENDSMS_AUTH_TOKEN = 'xxxxxxxx' 
+
+
+LOGIN_REDIRECT_URL = '/'

@@ -1,0 +1,51 @@
+{% load staticfiles %}
+
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{% block title %}demo{% endblock %}</title>
+
+        {% block head_css_extend_before_main_css %}{% endblock %}
+
+        <link rel="stylesheet" href="https://cdn.bootcss.com/jqueryui/1.11.0/jquery-ui.min.css">
+        <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+        
+        {% block header_css %}
+        {% endblock %}
+
+        <style>
+        {% block style %}{% endblock %}
+        </style>    
+    </head>
+
+    <body>
+        {% include 'navbar.html' %}
+
+        <div class="container">
+        {% block content %}
+        {% endblock %}
+        </div>
+
+        <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="/static/js/jquery.min.js"><\/script>')</script>
+        <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        {% block head_js %}
+        {% endblock %}
+
+        <script>
+        $(document).ready(function(){ 
+            {% block jquery %}
+            {% endblock %} 
+        });    
+        </script>
+
+        <script type="text/javascript"> 
+            {% block js %}
+            {% endblock %} 
+        </script>
+
+    </body>
+</html>
