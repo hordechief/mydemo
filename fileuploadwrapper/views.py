@@ -48,17 +48,19 @@ def upload_file(request):
         #return render_to_response('index.html', {'form': form}, context_instance=RequestContext(request))
         return HttpResponse(json.dumps({'message': 'invalid form!'}))
 
-# from django.utils.crypto import constant_time_compare
-from django.middleware.csrf import _sanitize_token, _compare_salted_tokens
-
 def upload_status(request):
     if request.method == 'GET':
         if request.GET['key']:
             csrftoken = request.META.get("CSRF_COOKIE") if "CSRF_COOKIE" in request.META else None
-            key = request.GET['key']
-            request_csrftoken = _sanitize_token(key)
             cache_exist = cache.get(csrftoken)
-            match = _compare_salted_tokens(request_csrftoken, csrftoken)
+            request_csrftoken = request.GET['key']
+            match = True
+            try:
+                from django.middleware.csrf import _sanitize_token, _compare_salted_tokens
+                request_csrftoken = _sanitize_token(request_csrftoken)                
+                match = _compare_salted_tokens(request_csrftoken, csrftoken)
+            except:
+                pass
             if cache_exist and match:
                 value = cache.get(csrftoken)
                 return HttpResponse(json.dumps(value), content_type="application/json")
