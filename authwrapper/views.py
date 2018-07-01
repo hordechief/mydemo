@@ -1,17 +1,20 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.core.cache import cache
 from django.contrib.auth import authenticate#, login, logout
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib import auth
-from django.views.generic.edit import FormView, UpdateView
+from django.views.generic.edit import FormView, UpdateView, FormMixin
+from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
 from django.views.decorators.csrf import csrf_exempt
 from forms import UserUpdateForm
 from django.http import JsonResponse, Http404
 from .models import WechatUserProfile
-from .forms import RegistrationForgetForm
+from .forms import RegistrationForgetForm, UserUpdateImageForm, UploadFileForm
 import datetime
 
 from authwrapper.backends import auth as auth_wrapper
@@ -133,7 +136,7 @@ class RegistrationView(FormView):
 
     def get_success_url(self, user=None):        
         try:
-            return reverse("profile_update", kwargs={'pk':user.id}) 
+            return reverse("userprofile_update", kwargs={'pk':user.id}) 
         except:
             return reverse(default_redirect_url) 
 
@@ -152,7 +155,7 @@ class RegistrationForgetView(RegistrationView):
 from phonenumber_field.validators import validate_international_phonenumber as vip
 
 @csrf_exempt
-def GetVerificationCode(request):
+def get_otp(request):
     if request.is_ajax():
         try:
             vip(request.POST['phone_number'])
@@ -168,10 +171,10 @@ def GetVerificationCode(request):
 
 # pk value is in self.kwargs
 
-class ProfileUpdateView(UpdateView):
+class UserProfileUpdateView(UpdateView):
     model = UserModel
     form_class = UserUpdateForm
-    template_name = 'auth/user_update_form.html'
+    template_name = 'auth/userprofile_update_form.html'
     success_url = None
     
 
@@ -182,21 +185,13 @@ class ProfileUpdateView(UpdateView):
         except:
             return None
 
-
     def get_form(self, form_class=UserUpdateForm):
         kwargs = self.get_form_kwargs()
         kwargs.update({'instance': self.get_object()})
         form = self.form_class(**kwargs)  
         return form
 
-    '''
-    def get_form(self,  *args, **kwargs):
-        form = super(ProfileUpdateView, self).get_form(*args, **kwargs)
-        #form.fields['phone'] = self.get_object(args,kwargs).phone
-        return form
-    '''
     def post(self, request, *args, **kwargs): 
-
         self.object = self.get_object()
         form = self.get_form() # use get_form() to replace, it will include all the information
         #form = self.form_class(request.POST, request.FILES,instance=self.get_object())  
@@ -210,18 +205,11 @@ class ProfileUpdateView(UpdateView):
             if wechat:
                 wechat.user = user   
                 wechat.save()
-
-            '''
-            wechat_id = self.request.session.get('wechat_id',None)
-            if wechat_id:
-                wechat = WechatUserProfile.objects.get(pk=wechat_id) 
-                wechat.user = user   
-                wechat.save()
-            '''
             
             auth.authenticate(**{'user':user})
-            print "before auth login"
             auth_login(request, user)
+
+            return redirect(reverse("userprofile_detail", kwargs={'pk':self.object.id}) )
         else:
             return self.form_invalid(form) #redirect(reverse("register_phone", kwargs={}))
 
@@ -229,3 +217,59 @@ class ProfileUpdateView(UpdateView):
 
     def form_invalid(self, form):
         return self.render_to_response(self.get_context_data(form=form))
+
+class UserProfileDetailView(DetailView):
+    model = UserModel
+    template_name = 'auth/userprofile_detail.html'
+
+    def get_queryset(self, *args, **kwargs):
+        return  UserModel().objects.all()
+
+class UserProfileDetailUpdateImageView(FormMixin, DetailView):
+    model = UserModel
+    template_name = 'auth/userprofile_detail.html'
+    form_class = UserUpdateImageForm
+
+    def get_object(self, *args, **kwargs):
+        try:
+            return  UserModel().objects.get(id=self.kwargs.get('pk'))
+            return UserModel._default_manager.get_by_natural_key(self.kwargs.get('pk'))
+        except:
+            return None
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(UserProfileDetailUpdateImageView, self).get_context_data(*args, **kwargs)
+        context["form"] = self.form_class(instance = self.get_object())
+        context["upload_form"] = UploadFileForm()
+        return context
+
+    def get_success_url(self):
+        return reverse("userprofile_detail", kwargs=self.kwargs)
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            usermodel = UserModel().objects.get(id=self.kwargs.get("pk"))
+
+            # method 1 - input upload
+            image = None
+            if 'image' in form.cleaned_data and form.cleaned_data.get('image'):
+                image = form.cleaned_data['image']
+            # method 2 - ajax upload
+            if cache.has_key('cache_key_upload') and cache.get('cache_key_upload',None):
+                image = cache.get('cache_key_upload')
+                cache.delete('cache_key_upload')
+            if image:
+                usermodel.image = image
+                usermodel.save()
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+
+class UserProfileListView(ListView):
+    model = UserModel
+    template_name = 'auth/userprofile_list.html' 
+
+    def get_queryset(self, *args, **kwargs):
+        return  UserModel().objects.all()

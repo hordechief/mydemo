@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+
+{% block content %}
+<a href="{{ object.image.url }}"><img src="{{object.image.url}}" alt="{{object.image.value}}" style="max-width: 200px; max-height: 200px; border-radius: 5px;" /></a>
+ {% endblock %}

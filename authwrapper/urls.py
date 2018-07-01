@@ -8,12 +8,16 @@ from django.contrib.auth import views as auth_views
 from .views import (
     logout, 
     login, 
-    GetVerificationCode, 
+    get_otp, 
     wechat_login,
     )
+	
 from .views import (
     RegistrationView, 
-    ProfileUpdateView, 
+    UserProfileListView, 
+    UserProfileUpdateView,
+    UserProfileDetailView,
+    UserProfileDetailUpdateImageView,
     RegistrationForgetView
     )
 
@@ -23,9 +27,15 @@ urlpatterns = [
     url(r'^logout/$', logout, name='authwrapper_logout'), 
     url(r'^login/$', login, name='authwrapper_login'), 
     url(r'^wechatlogin/$', wechat_login, name='wechatlogin'), 
+
     url(r'^register/$', RegistrationView.as_view(), name='register_phone'), 
-    url(r'^completeProfile/(?P<pk>\d+)$', ProfileUpdateView.as_view(), name='profile_update'), 
-    url(r'^getVerificationCode/$', GetVerificationCode, name='getVerificationCode'), 
+    url(r'^getVerificationCode/$', get_otp, name='getVerificationCode'),
+
+    url(r'^user/(?P<pk>\d+)/edit$', UserProfileUpdateView.as_view(), name='userprofile_update'), 
+    url(r'^user/(?P<pk>\d+)$', UserProfileDetailView.as_view(), name='userprofile_detail'), 
+    url(r'^user/(?P<pk>\d+)/edit/avatar$', UserProfileDetailUpdateImageView.as_view(), name='userprofile_detail_update_avatar'), 
+    url(r'^user/$', UserProfileListView.as_view(), name='userprofile_list'),     
+
     url(r'^password/change/$', auth_views.password_change, 
                 {'post_change_redirect': reverse_lazy('auth_password_change_done2')}, name='auth_password_change2'), 
     url(r'^password/change/done/$', auth_views.password_change_done, name='auth_password_change_done2'), 

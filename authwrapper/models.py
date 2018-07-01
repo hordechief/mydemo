@@ -232,10 +232,16 @@ class MyAbstractUser(AbstractBaseUser, PermissionsMixin):
 
     def get_absolute_url(self):
         try:    
-            return reverse("userprofile_detail", kwargs={"id": self.id })  
+            return reverse("userprofile_detail", kwargs={"pk": self.id })  
         except:
             return ''
-            
+
+    def get_absolute_url_update_avatar(self):
+        try:    
+            return reverse("userprofile_detail_update_avatar", kwargs={"pk": self.id })  
+        except:
+            return ''
+
     def get_image_url(self):
         if self.image:
             return self.image.url
@@ -297,7 +303,7 @@ class WechatUserProfile(models.Model):
             return self.openid
 
     def get_absolute_url(self):
-        return reverse("userprofile_detail", kwargs={"id": self.id })  
+        return reverse("userprofile_detail", kwargs={"pk": self.id })  
 
     def get_image_url(self):
         return self.headimgurl #None  

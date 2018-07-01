@@ -36,15 +36,20 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'django.contrib.sites',
-    'codingsohodemo',
+    'django.contrib.staticfiles',    
+    
     'authwrapper',
     'phone_login',
     'rest_framework',
     'rest_framework.authtoken',    
     'crispy_forms',
     'weixin',
+
+    'imagewrapper',
+    'codingsohodemo',
+    'fileuploadwrapper',
+    'plugin',
 ]
 
 MIDDLEWARE = [
@@ -62,7 +67,10 @@ ROOT_URLCONF = 'mydemo.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, "templates"), ],
+        'DIRS': [            
+            os.path.join(BASE_DIR, "plugin", "templates"),
+            os.path.join(BASE_DIR, "templates"),  
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -128,16 +136,28 @@ TIME_ZONE = 'Asia/Shanghai'
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+# STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_in_env", "static_root")
+STATIC_ROOT = os.path.join(BASE_DIR, "static_in_env", "static_root")
+    
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static_in_pro", "our_static"),
+    # os.path.join(BASE_DIR, "imagewrapper", "static"), 
+    # os.path.join(os.path.dirname(BASE_DIR), "env", "Lib", "site-packages", "django", "contrib", "admin", "static"),
+)
 
-AUTH_USER_MODEL = 'authwrapper.MyUser'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "static_in_env", "media_root")
+
+
+
 ACCOUNT_ALLOW_MIX_TYPE_LOGIN = True
 UUSLUGIFY = True
 
 AUTHENTICATION_BACKENDS = (        
     'authwrapper.backends.auth.MyBackend', 
-    'authwrapper.backends.auth.WechatBackend',
-    'phone_login.backends.phone_backend.PhoneBackend',
-    'django.contrib.auth.backends.ModelBackend',     
+    'authwrapper.backends.auth.WechatBackend',     
+    # 'phone_login.backends.phone_backend.PhoneBackend',
+    'django.contrib.auth.backends.ModelBackend',    
     )
 AUTH_USER_MODEL = 'authwrapper.MyUser'
 
@@ -166,3 +186,9 @@ SENDSMS_AUTH_TOKEN = 'xxxxxxxx'
 
 
 LOGIN_REDIRECT_URL = '/'
+
+SITE_ID = 1
+
+from django.conf import global_settings
+FILE_UPLOAD_HANDLERS = ['fileuploadwrapper.uploadfilehandler.UploadProgressCachedHandler', ] \
++ global_settings.FILE_UPLOAD_HANDLERS

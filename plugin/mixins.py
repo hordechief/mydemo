@@ -20,14 +20,14 @@ from django.conf import settings
 from plugin.forms import  ImageFileInput
 
 
-model_map = settings.MODEL_MAP or  {}
+model_map = settings.MODEL_MAP if hasattr(settings, "MODEL_MAP") else {} or  {}
 # {
 #     'DailyInspection': ['daily_inspection_stat','Daily Inspection'],
 #     'Forklift': ['storage_sec','Storage Security'],
 #     'Vehicle': ['transport_security','Transport Security'], 
 # }
 
-submodel_map = settings.SUBMODEL_MAP or {}
+submodel_map = settings.SUBMODEL_MAP  if hasattr(settings, "SUBMODEL_MAP") else {} or {}
 # {
 #     'ShelfAnnualInspection': ['shelf_inspection_list','shelf inspection'], # add Model homepage
 #     'shelf': ['shelf_inspection_list','shelf inspection'],

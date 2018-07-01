@@ -174,3 +174,15 @@ class UserChangeForm(forms.ModelForm):
         # This is done here, rather than on the field, because the
         # field does not have access to the initial value
         return self.initial["password"]
+
+class UserUpdateImageForm(forms.ModelForm):
+    class Meta:
+        model = User
+
+        fields = [
+            'image'
+        ]
+
+class UploadFileForm(forms.Form):
+  image = forms.ImageField(widget=forms.FileInput(
+    attrs={'required': 'required'}))        

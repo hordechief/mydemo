@@ -6,5 +6,5 @@ from django.contrib import admin
 from .views import pgwshow
 
 urlpatterns = [
-    url(r'^pgwshow$', pgwshow, name="pgwshow"),
+    url(r'^pgwshow/$', pgwshow, name='demo_pgwshow'), 
 ]
