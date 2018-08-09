@@ -37,8 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.sites',
-    'django.contrib.staticfiles',    
-    
+    'django.contrib.staticfiles',
+    # 'django.contrib.flatpages', 
+
+    'django_comments', 
+    'mptt',    
+    'comments',
+        
     'authwrapper',
     'phone_login',
     'rest_framework',
@@ -50,7 +55,12 @@ INSTALLED_APPS = [
     'codingsohodemo',
     'fileuploadwrapper',
     'plugin',
+    
+
+    'crowdfundings'
 ]
+
+COMMENTS_APP = 'comments'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -69,6 +79,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [            
             os.path.join(BASE_DIR, "plugin", "templates"),
+            os.path.join(BASE_DIR, "comments", "templates"),
             os.path.join(BASE_DIR, "templates"),  
         ],
         'APP_DIRS': True,
@@ -192,3 +203,4 @@ SITE_ID = 1
 from django.conf import global_settings
 FILE_UPLOAD_HANDLERS = ['fileuploadwrapper.uploadfilehandler.UploadProgressCachedHandler', ] \
 + global_settings.FILE_UPLOAD_HANDLERS
+

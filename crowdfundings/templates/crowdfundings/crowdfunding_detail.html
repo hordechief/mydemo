@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load comments %}
+{% load mptt_tags %}
+
+{% block content %}
+<style type="text/css">
+    label{
+        display:inline;
+        float:left;
+        width:20%;
+    }
+    input,textarea{
+        width:100%;
+    }
+    textarea{
+        height:80px;
+    }
+    input[type=submit]{
+        width:20%;
+        margin-left:0%;
+        float:right;
+    }
+
+
+    .childrenX {
+        background-color: #e4d7d7;
+        border: solid 1px;
+        border-color: #bbbbc1;
+    }
+</style>
+
+<div class='row'>
+    <div class='col-sm-8'> 
+        <h2>{{object.title}}</h2>
+        <hr>
+        <div class="row">
+        	<div class="col-sm-6">
+        		<p class='lead'>{{object.detail}}</p>
+        	</div>
+        	<div class="col-sm-6">
+		        {% if object.get_image_url %}
+		        <div><img  id='img' class= 'img-responsive' src='{{ object.get_image_url }}'/></div>
+		        {% endif %}        		
+        	</div>
+        </div>
+    
+        <div id="new_cmt">
+            <hr>
+            {# render_comment_form for object #}
+
+            <h3> Post your comments here </h3>
+            {% include "comments/comments_form.html" %}
+
+            <hr>
+            <h3>Comments List</h3>
+            {% include "comments/comments_tree.html" %}
+            <hr>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<script type="text/javascript" charset="utf-8">
+
+{% block jquery %}
+
+function bindform(this_fa_reply){
+    var cmt_cell = this_fa_reply.parents('.comment-footer');
+    var form_div = cmt_cell.next();
+    $(".comment-form").hide();    
+    form_div.css("display","block");
+}
+
+$(".fa-reply").bind("click",function(){
+    bindform($(this));
+});
+
+
+{# include "comments/_ajax_comments.html" with object=object #}
+{% endblock %}
+</script>
+
+
