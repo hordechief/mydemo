@@ -22,8 +22,9 @@
         {% if node.id %}    
             <input type="hidden" name="parent" id="parent_id" value="{{ node.id }}" />
         {% endif %}
-        <input type='hidden' name='next' value='{% url "Crowdfunding_detail" pk=node.object_pk|str2int %}'/>
-        <input type="submit">
+        <!-- <input type='hidden' name='next' value='{% url "Crowdfunding_detail" pk=node.object_pk|str2int %}'/> -->
+        <input type='hidden' name='next' value='{% url "Crowdfunding_detail" pk=object.id %}'/>
+        <input class='btn btn-primary' type="submit" value="{% trans 'submit' %}">
     </form>
 </div>
 

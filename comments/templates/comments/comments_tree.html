@@ -1,16 +1,46 @@
 {% load comments %}
 {% load mptt_tags %}
 
+<style type="text/css">
+.comments-msg{
+    min-height: 30px
+}
+.comments-msg a{
+    float: left;
+}
+
+.comments-msg a img{
+    height:25px; 
+    width:25px; 
+    margin-right: 10px
+}
+    
+</style>
+
+<h3>Comments for - {{ object.title }}:</h3>
+
 {% get_comment_list for object as comments %}
 {% if comments %}
     {% recursetree comments %}
+    <hr>
         <a name="c{{ node.id }}"></a>
-        <h3>{{ node.comment }}</h3>
-        <div class="comment-footer">
-            {{ node.user }}
-            {{ node.submit_date|timesince }} ago
-            <a type = "submit"><i class="fa fa-reply"  aria-hidden="true"> Reply</i></a>
-            <a href="{{ object.get_absolute_url }}#c{{ node.id }}">#</a>
+        <div class="comments-msg">
+            <a name="c{{ node.id }}" href="{% if node.user.get_image_url %}{{ node.user.get_image_url }}{% endif %}">
+                {% if node.user.get_image_url %}
+                <img src="{{ node.user.get_image_url }}" alt="...">
+                {% endif %}
+            </a>
+            {{ node.comment }}
+        </div>        
+        <div class="row comment-footer">
+            <div class="col-sm-6">
+                {{ node.user }}
+            </div>
+            <div class="col-sm-6 pull-right text-right">
+                {{ node.submit_date|timesince }} ago
+                <a type = "submit"><i class="fa fa-reply"  aria-hidden="true"> Reply</i></a>
+                <a href="{{ object.get_absolute_url }}#c{{ node.id }}">#</a>
+            </div>            
         </div>
 
         {% render_comment_form for object %}
