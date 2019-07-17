@@ -7,39 +7,24 @@ from django.contrib.auth import views as auth_views
 
 from .views import (
     logout, 
-    login, 
-    get_otp, 
-    wechat_login,
+    login,
+    auth_view_login,
     )
-	
-from .views import (
-    RegistrationView, 
-    UserProfileListView, 
-    UserProfileUpdateView,
-    UserProfileDetailView,
-    UserProfileDetailUpdateImageView,
-    RegistrationForgetView
-    )
-
 
 
 urlpatterns = [    
     url(r'^logout/$', logout, name='authwrapper_logout'), 
     url(r'^login/$', login, name='authwrapper_login'), 
-    url(r'^wechatlogin/$', wechat_login, name='wechatlogin'), 
+    url(r'^auth_login/$', auth_view_login, name='auth_view_login'), 
 
-    url(r'^register/$', RegistrationView.as_view(), name='register_phone'), 
-    url(r'^getVerificationCode/$', get_otp, name='getVerificationCode'),
-
-    url(r'^user/(?P<pk>\d+)/edit$', UserProfileUpdateView.as_view(), name='userprofile_update'), 
-    url(r'^user/(?P<pk>\d+)$', UserProfileDetailView.as_view(), name='userprofile_detail'), 
-    url(r'^user/(?P<pk>\d+)/edit/avatar$', UserProfileDetailUpdateImageView.as_view(), name='userprofile_detail_update_avatar'), 
-    url(r'^user/$', UserProfileListView.as_view(), name='userprofile_list'),     
-
-    url(r'^password/change/$', auth_views.password_change, 
-                {'post_change_redirect': reverse_lazy('auth_password_change_done2')}, name='auth_password_change2'), 
-    url(r'^password/change/done/$', auth_views.password_change_done, name='auth_password_change_done2'), 
-    url(r'^password/forget/$', RegistrationForgetView.as_view(), name='authwrapper_password_forget'), 
+    # default
+    url(r'^auth/', include('django.contrib.auth.urls')),
+    # registration
+    # url(r'^accounts/', include('registration.backends.default.urls')),        
+    # wechat
+    url(r'^weixin/', include('authwrapper.wechat.urls')),
+    # phone
+    url(r'^phone/', include('authwrapper.phone.urls')),
 ]
 
 # if "wechat" in settings.INSTALLED_APPS:
@@ -107,4 +92,19 @@ else:
             name='auth_password_reset_confirm')
     ]
 
+'''
+
+# django.contrib.auth.urls.py
+'''
+urlpatterns = [
+    url(r'^login/$', views.login, name='login'),
+    url(r'^logout/$', views.logout, name='logout'),
+    url(r'^password_change/$', views.password_change, name='password_change'),
+    url(r'^password_change/done/$', views.password_change_done, name='password_change_done'),
+    url(r'^password_reset/$', views.password_reset, name='password_reset'),
+    url(r'^password_reset/done/$', views.password_reset_done, name='password_reset_done'),
+    url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        views.password_reset_confirm, name='password_reset_confirm'),
+    url(r'^reset/done/$', views.password_reset_complete, name='password_reset_complete'),
+]
 '''

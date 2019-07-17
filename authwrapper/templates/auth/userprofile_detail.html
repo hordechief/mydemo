@@ -5,21 +5,20 @@
 <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
 
+
+<link rel="stylesheet" href="https://cdn.bootcss.com/ionicons/2.0.0/css/ionicons.min.css">
+<link rel="stylesheet" href="https://cdn.bootcss.com/admin-lte/2.4.2/css/skins/_all-skins.min.css">
 {% block header_css %}
 <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="https://cdn.bootcss.com/ionicons/2.0.0/css/ionicons.min.css">
 <link rel="stylesheet" href="https://cdn.bootcss.com/admin-lte/2.4.2/css/AdminLTE.min.css">
-<link rel="stylesheet" href="https://cdn.bootcss.com/admin-lte/2.4.2/css/skins/_all-skins.min.css">
-
 <link rel="stylesheet" href="https://cdn.bootcss.com/jqueryui/1.10.2/jquery-ui.min.css">
 {% endblock %} 
 
-
-{% block head_js %}
 <script src="https://cdn.bootcss.com/admin-lte/2.4.2/js/demo.js"></script>
 <script src="https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js"></script>
-<script src="https://cdn.bootcss.com/admin-lte/2.4.2/js/adminlte.min.js"></script>
 
+{% block head_js %}
+<script src="https://cdn.bootcss.com/admin-lte/2.4.2/js/adminlte.min.js"></script>
 <script src="https://cdn.bootcss.com/jquery.form/4.2.2/jquery.form.js"></script>
 <script src="https://cdn.bootcss.com/jqueryui/1.10.2/jquery-ui.min.js"></script>
 
@@ -43,7 +42,7 @@
             <div class="box-body box-profile">
               <img class="profile-user-img img-responsive img-circle" src="{% if object.image %}{{object.image.url}}{% else %}https://cdn.bootcss.com/admin-lte/2.4.0/img/user4-128x128.jpg{% endif %}" alt="User profile picture">
 
-              <h3 class="profile-username text-center">{{object}}</h3>
+              <h3 class="profile-username text-center">{{object}} <small><a href="{% url 'userprofile_update' object.pk %}">Edit</a></small></h3>
 
               <p class="text-muted text-center">Software Engineer</p>
 
@@ -100,7 +99,7 @@
           </div>
           <!-- /.box -->
           {% else %}
-          <a href="{{object.get_absolute_url_update_avatar}}">Update Avatar</a><br>
+          <a href="{{object.get_absolute_url_update_avatar}}" class="btn btn-primary">Update Avatar</a><br><br>
           
           {% endif %}
 

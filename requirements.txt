@@ -1,6 +1,9 @@
 django-phone-login-master.zip
 django-uuslug==1.1.8
 python-weixin==0.3.0
-django-rest-framework
+django-rest-framework==3.6.3
+django-sendsms==0.2.3
 django-crispy-forms==1.7.2
 Pillow==5.1.0
+django-contrib-comments==1.9.0
+django-mptt==0.9.1

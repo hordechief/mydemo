@@ -3,19 +3,29 @@
 
 {% load mytags %}
 
-<div class="comment-form" {% if node.id %} style="display:none; padding-bottom:40px"{% endif %}>
-    <form action="{% comment_form_target %}" method="post">{% csrf_token %}
+<div id="comment-form-{{ node.id }}" class="comment-form" {% if node.id %} style="display:none; padding-bottom:40px"{% endif %}>
+    <form id="comment-form-{{ node.id }}f" action="{% comment_form_target %}" method="post">{% csrf_token %}
         {% for field in form %}
             {% if field.is_hidden %}
                 <div>{{ field }}</div>
             {% else %}
-                {% if field.errors %}{{ field.errors }}{% endif %}
-                <p
-                    {% if field.errors %} class="error"{% endif %}
-                    {% ifequal field.name "url" %} style="display:none;"{% endifequal %}
-                    {% ifequal field.name "honeypot" %} style="display:none;"{% endifequal %}>              
-                    {{ field.label_tag }} {{ field }}
-                </p>
+                {% if field.name == "name" %} 
+                    <div style="display:none;">
+                        <input type="text" id="id_name" class="input-xlarge" name="name" placeholder="please enter name" value="{% if not request.user.email %}anonymous{% else %}{{request.user.get_full_name}}{% endif %}" required="required">
+                    </div>
+                {% elif field.name == "email" %}
+                    <div style="display:none;">
+                        <input class="input-xlarge" id="id_email" type="email" name="email" placeholder="please enter email" value="{% if not request.user.email %}guest@guest.com{% else %}{{request.user.email}}{% endif %}" required="required">
+                    </div>                
+                {% else %}
+                    {% if field.errors %}{{ field.errors }}{% endif %}
+                    <p
+                        {% if field.errors %} class="error"{% endif %}
+                        {% ifequal field.name "url" %} style="display:none;"{% endifequal %}
+                        {% ifequal field.name "honeypot" %} style="display:none;"{% endifequal %}>              
+                        {{ field.label_tag }} {{ field }}
+                    </p>
+                {% endif %}
             {% endif %}
         {% endfor %}
 
@@ -24,6 +34,7 @@
         {% endif %}
         <!-- <input type='hidden' name='next' value='{% url "Crowdfunding_detail" pk=node.object_pk|str2int %}'/> -->
         <input type='hidden' name='next' value='{% url "Crowdfunding_detail" pk=object.id %}'/>
+        <!-- <input type='hidden' name='next' value='{% url "Crowdfunding_comments" pk=object.id %}'/> -->
         <input class='btn btn-primary' type="submit" value="{% trans 'submit' %}">
     </form>
 </div>

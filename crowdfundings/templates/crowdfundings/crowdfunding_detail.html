@@ -76,7 +76,8 @@ $(".fa-reply").bind("click",function(){
 });
 
 
-{# include "comments/_ajax_comments.html" with object=object #}
+{% include "comments/_ajax_comments.html" with object=object %}
+
 {% endblock %}
 </script>
 

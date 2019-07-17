@@ -35,7 +35,7 @@ class CrowdfundingDetailView(DetailView):
     def get(self, request, *args, **kwargs):
         obj = self.get_object()
         if request.is_ajax():
-            if "addFavorite" == request.GET.get("purpose", 'addFavorite'):                
+            if "addFavorite" == request.GET.get("purpose"):                
                 if True == obj.is_favorite:
                     obj.is_favorite = False
                 else:
@@ -46,8 +46,8 @@ class CrowdfundingDetailView(DetailView):
                         }
 
                 return JsonResponse(data) 
-        else:
-            return super(CrowdfundingDetailView, self).get(request, *args, **kwargs) 
+        
+        return super(CrowdfundingDetailView, self).get(request, *args, **kwargs) 
 
 class CrowdfundingCreateView(CreateView):
     template_name = 'crowdfundings/crowdfunding_create.html'

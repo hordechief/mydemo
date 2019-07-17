@@ -1,0 +1,103 @@
+{% load comments %}
+
+(function( $ ){
+    $.fn.bindPostCommentHandler = function() {
+        // We get passed a list of forms; iterate and get a unique id for each
+        // attach a submit trigger to handle saving and returning
+        this.each(function() {
+
+            $(this).submit(function() {
+                commentform = this;
+                commentwrap = $(this).parent(); //#newly_posted_comment
+
+                $.ajax({
+                    type: "POST",
+                    data: $(commentform).serialize(),
+                    url: "{% comment_form_target %}",
+                    cache: false,
+                    dataType: "html",
+
+                    success: function(html, textStatus) {
+                        // Replace the whole comments area
+                        var replaceWholeComments = true;
+                        if(replaceWholeComments){
+                            postedcomment = $(html).find('#cmt_show');
+                            posted_comment_html=postedcomment.html();
+                            posted_comment_wrap_html="<div id='cmt_show'>"+posted_comment_html+"</div>";
+                            $('#cmt_show').replaceWith(posted_comment_wrap_html);
+                            $('.comment-form form').bindPostCommentHandler();
+                            $('.comment-footer .fa-reply').bindReplyCommentHandler();
+                            return;
+                        }
+
+                        var replaceForm = false;
+                        if(replaceForm){
+                            // Extract the form from the returned html
+                            postedcomment = $(html).find('#newly_posted_comment');
+                            $(commentform).replaceWith("<ul class='children'>"+postedcomment.html()+"</ul>");
+                            $(commentwrap).hide();
+                            $(commentwrap).slideDown(600);
+                            $(commentwrap).find('.comment-form form').bindPostCommentHandler();
+                        }
+
+                        // legacy code, forget what does it mean
+                        postedcomment = $(html).find('#newly_posted_comment'); 
+                        commentchild = $(commentwrap).next();
+                        // cmt_show - wrap of comments list, new_cmt - wrapper of new post
+                        if($(commentwrap).parent().attr('id') == "cmt_show" || $(commentwrap).parent().attr('id') == "new_cmt")
+                        {
+                            $(commentwrap).css("display","block");
+                            $($("#cmt_show").children('.comment-form')[0]).before(postedcomment.html());
+                        }
+                        else
+                        {
+                            $(commentwrap).css("display","none");
+                            $(commentchild).append(postedcomment.html());
+                        }  
+                        $('.comment-form form').bindPostCommentHandler(); 
+                                           
+                        $('#comment_form form')[0].reset(); //only for new level0 comments post 
+
+                        $('.comment-footer .fa-reply').bindReplyCommentHandler();
+                        $(".fa-reply").bind("click",function(){bindform($(this));});     
+
+                    },
+
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        $(commentform).replaceWith('Your comment was unable to be posted at this time.  We apologise for the inconvenience.');
+                    }
+
+                });
+                return false;
+            });
+        }); //each
+    };
+
+    function bindform(this_fa_reply){
+        var cmt_cell = this_fa_reply.parents('.comment-footer');
+        var form_div = cmt_cell.next();
+        $(".comment-form").hide();    
+        form_div.css("display","block");
+    }
+
+
+    $.fn.bindReplyCommentHandler = function() {
+        this.each(function() {  
+            $(this).bind("click",function(){
+                // console.log($(this));
+                this_fa_reply = $(this);
+                var cmt_cell = this_fa_reply.parents('.comment-footer');
+                var form_div = cmt_cell.next();
+                $(".comment-form").hide();    
+                form_div.css("display","block");
+            });    
+        }); //each
+    };
+
+})( jQuery );
+
+
+$(function(){
+    $('.comment-form form').bindPostCommentHandler();
+    $('.comment-footer .fa-reply').bindReplyCommentHandler();
+});

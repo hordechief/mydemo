@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'comments',
         
     'authwrapper',
+    'authwrapper.phone',
+    'authwrapper.wechat',
     'phone_login',
     'rest_framework',
     'rest_framework.authtoken',    
@@ -63,6 +65,7 @@ INSTALLED_APPS = [
 COMMENTS_APP = 'comments'
 
 MIDDLEWARE = [
+    'authwrapper.middleware.AuthwrapperMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -161,6 +164,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "static_in_env", "media_root")
 
 
 
+# auth
+
 ACCOUNT_ALLOW_MIX_TYPE_LOGIN = True
 UUSLUGIFY = True
 
@@ -170,7 +175,7 @@ AUTHENTICATION_BACKENDS = (
     # 'phone_login.backends.phone_backend.PhoneBackend',
     'django.contrib.auth.backends.ModelBackend',    
     )
-AUTH_USER_MODEL = 'authwrapper.MyUser'
+AUTH_USER_MODEL = 'phone.MyUser'
 
 ACCOUNT_REGISTER_TYPE =  'phone' #phone, 'mail',
 
@@ -181,6 +186,9 @@ if not 'SERVER_SOFTWARE' in os.environ:
 else:
     APP_ID = 'wx168434ba37e8c17b' #
     APP_SECRET = 'd4624c36b6795d1d99dcf0547af5443d'
+
+APP_ID = 'wx5700620c309d157e'
+APP_SECRET = 'e9cae7ab69f641c6e4c793457c04cad4'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -195,6 +203,7 @@ SENDSMS_FROM_NUMBER = "+XXxxxxxxxxxx"
 SENDSMS_ACCOUNT_SID = 'ACXXXXXXXXXXXXXX'
 SENDSMS_AUTH_TOKEN = 'xxxxxxxx' 
 
+PHONE_LOGIN_ATTEMPTS = 100
 
 LOGIN_REDIRECT_URL = '/'
 

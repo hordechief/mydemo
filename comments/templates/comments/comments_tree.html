@@ -10,49 +10,60 @@
 }
 
 .comments-msg a img{
-    height:25px; 
-    width:25px; 
+    height:40px; 
+    width:40px; 
     margin-right: 10px
+}
+
+.sub-commments{
+/*    border-color: #b5abab;
+    border-style: solid
+    ;border-width: 1px;
+    padding:5px 5px 5px 15px; 
+    margin:3px; 
+    background-color: rgba(217, 222, 174, 0.12);*/
 }
     
 </style>
 
-<h3>Comments for - {{ object.title }}:</h3>
+<div id='cmt_show'>
+    <h3>Comments for - {{ object.title }}:</h3>
 
-{% get_comment_list for object as comments %}
-{% if comments %}
-    {% recursetree comments %}
-    <hr>
-        <a name="c{{ node.id }}"></a>
-        <div class="comments-msg">
-            <a name="c{{ node.id }}" href="{% if node.user.get_image_url %}{{ node.user.get_image_url }}{% endif %}">
-                {% if node.user.get_image_url %}
-                <img src="{{ node.user.get_image_url }}" alt="...">
+    {% get_comment_list for object as comments %}
+    {% if comments %}
+        {% recursetree comments %}
+        <div {% if request.GET.c|add:"0" == node.id %} id="newly_posted_comment" {% endif %} class="comments-wrapper">
+            <hr>
+            <div class="comments-cell {% if node.level > 0 %}sub-commments{% endif %}">
+                <div class="comments-msg">
+                    <a name="c{{ node.id }}" href="{% if node.user.get_image_url %}{{ node.user.get_image_url }}{% endif %}">
+                        {% if node.user.get_image_url %}
+                        <img src="{{ node.user.get_image_url }}" alt="...">
+                        {% endif %}
+                    </a>
+                    {{ node.comment }}
+                </div>        
+                <div class="row comment-footer">
+                    <div class="col-sm-12 pull-right text-right">
+                        {% if not node.user %}anonymous{% else %}{{ node.user }}{% endif %} | 
+                        {{ node.submit_date|timesince }} ago
+                        <a type = "submit"><i class="fa fa-reply"  aria-hidden="true"> Reply</i></a> | 
+                        <a href="{{ object.get_absolute_url }}#c{{ node.id }}">#</a>
+                    </div>            
+                </div>
+
+                {% render_comment_form for object %}
+
+                {# recursion! children of a given comment #}
+
+                {% if not node.is_leaf_node %}
+                    <ul class="children">
+                        {{ children }}
+                    </ul>
                 {% endif %}
-            </a>
-            {{ node.comment }}
-        </div>        
-        <div class="row comment-footer">
-            <div class="col-sm-6">
-                {{ node.user }}
             </div>
-            <div class="col-sm-6 pull-right text-right">
-                {{ node.submit_date|timesince }} ago
-                <a type = "submit"><i class="fa fa-reply"  aria-hidden="true"> Reply</i></a>
-                <a href="{{ object.get_absolute_url }}#c{{ node.id }}">#</a>
-            </div>            
         </div>
+        {% endrecursetree %}
 
-        {% render_comment_form for object %}
-
-        {# recursion! children of a given comment #}
-
-        {% if not node.is_leaf_node %}
-            <ul class="children">
-                {{ children }}
-            </ul>
-        {% endif %}
-    {% endrecursetree %}
-
-{% endif %}
-<!-- {% render_comment_form for object %} -->
+    {% endif %}
+</div>

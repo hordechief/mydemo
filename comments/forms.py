@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.admin import widgets
 # from django.contrib.comments.forms import CommentForm
 from django_comments.forms import CommentForm
-from comments.models import MPTTComment
+from models import MPTTComment
 
 
 

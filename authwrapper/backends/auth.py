@@ -7,7 +7,8 @@ from django.contrib import auth
 
 #from django.core.exceptions import ObjectDoesNotExist
 
-from authwrapper.models import MyUser, WechatUserProfile
+from authwrapper.phone.models import MyUser
+from authwrapper.wechat.models import WechatUserProfile
 
 from weixin.client import WeixinMpAPI
 #from weixin.oauth2 import OAuth2AuthExchangeError
@@ -98,6 +99,20 @@ class MyBackend(object):
         return user if self.user_can_authenticate(user) else None
 
 
+def CopyWechatProfileFromWeixinAPI(profile, user):
+    # profile.unionid = user['unionid'] # not exist in latest version
+    #profile.privilege = user['privilege'] #privilege is list
+    profile.city = user['city']
+    profile.country = user['country']
+    profile.language = user['language']
+    if 1 == user['sex']:
+        profile.sex = 'male'
+    else:
+        profile.sex = 'female'
+    profile.nickname = user['nickname']
+    profile.headimgurl = user['headimgurl']
+
+
 class WechatBackend(object):
 
     def authenticate(self, request, user):
@@ -112,17 +127,7 @@ class WechatBackend(object):
                     profile.user =  cur_user
                     profile.save()
         else:
-            profile.unionid = user['unionid']
-            #profile.privilege = user['privilege'] #privilege is list
-            profile.city = user['city']
-            profile.country = user['country']
-            profile.language = user['language']
-            if 1 == user['sex']:
-                profile.sex = 'male'
-            else:
-                profile.sex = 'female'
-            profile.nickname = user['nickname']
-            profile.headimgurl = user['headimgurl']
+            CopyWechatProfileFromWeixinAPI(profile, user)
             if cur_user.is_active and not cur_user.is_anonymous() and cur_user is not None:
                 profile.user = cur_user
             profile.save()

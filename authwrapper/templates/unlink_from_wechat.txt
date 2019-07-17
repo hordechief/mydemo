@@ -1,0 +1,25 @@
+<script>
+{% block jquery %}
+$("#link>a").click(function(event){
+    event.preventDefault();
+    $.ajax({
+        type: "GET", 
+        url: "{% url 'unlink_from_wechat' %}",
+        data: {},
+        success: function(data) {
+            $('#link>a').html('link');
+            //$('#link').css("display": "none"); //it will make ajax = False
+            $('#link').html('');
+        }, 
+        error: function(response, error) {
+            
+        }
+    })
+
+    // $("#add-form").submit() # it will go to the next page
+})
+
+{% endblock %}
+</script>
+
+<a href='{% url "unlink_from_wechat" %}'>unlink</a>

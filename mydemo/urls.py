@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^fileupload/', include('fileuploadwrapper.urls')),
     url(r'^auth/', include('django.contrib.auth.urls')),
     url(r'^crowdfundings/', include('crowdfundings.urls')),
+    # url(r'^comments/', include('django_comments.urls')),
     url(r'^$', home,name="home"),
 ]
 
